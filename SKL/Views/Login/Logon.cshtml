@@ -1,0 +1,52 @@
+﻿@model SKL.Models.Login
+
+@{
+    ViewData["Title"] = "Logon";
+}
+
+<h2>Logon</h2>
+<hr />
+
+@if (User.Identity.IsAuthenticated)
+{
+
+}
+else
+{
+    <div class="row">
+        <div class="form-group has-danger col-md-3">
+            @Html.DisplayNameFor(m => m.NomeUsuario
+       )
+            @Html.TextBoxFor(m => m.NomeUsuario, new { @class = "form-control" })
+            <span asp-validation-for="NomeUsuario" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group has-danger col-md-3">
+            @Html.DisplayNameFor(m => m.Senha)
+            @Html.PasswordFor(m => m.Senha, new { @class = "form-control" })
+            <span asp-validation-for="Senha" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3">
+            <div class="form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" name="remember" type="checkbox">
+                    <span>Lembrar senha</span>
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="row" style="padding-top: 1rem">
+        <div class="col-md-3">
+            <button type="submit" class="btn btn-success"><i class="fa fa-sign-in"></i> Login</button>
+
+        </div>
+    </div>
+    <div class="row" style="padding-top: 1rem">
+        <div class="col-sm-3">
+            <a asp-controller="" asp-action="">Esqueceu a senha?</a> <!-- criar tela para reenvio de senha -->
+        </div>
+    </div>
+}
