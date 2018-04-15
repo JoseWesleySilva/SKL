@@ -7,62 +7,62 @@ using Microsoft.AspNetCore.Mvc;
 using SKL.DAO;
 using SKL.Models;
 using SKL.Service;
+using SKL.Fachada;
+using SKL.Util;
+using Microsoft.AspNetCore.Authorization;
 
 namespace SKL.Controllers
 {
     public class LoginController : Controller
     {
-        private readonly SkldbMainContext _context;
-        private readonly LoginService _loginService;
+        private readonly IFacade _fachada;
+        private Resultado Resultado { get; set; }
 
         public LoginController(SkldbMainContext context)
         {
-            _context = context;
-            _loginService = new LoginService(context);
+            _fachada = new Facade(context);
         }
 
-        /*  localhost/Login/Logon
-        *   metodo inicial de login
-        */
         [HttpGet]
         public IActionResult Logon()
         {
             return View();
         }
 
-        /*  localhost/Login/Logon
-         *  metodo de validação de logon do usuário
-         */
         [HttpPost]
         public async Task<IActionResult> Logon(Login login)
         {
-            var resultado = _loginService.ConsultarLogin(login);
-
-            if (string.IsNullOrWhiteSpace(resultado.Mensagem))
-            {
-                ViewData["Mensagem"] = resultado.Mensagem;
-                return RedirectToAction(nameof(Logon), nameof(LoginController));
-            }
+            if (!ModelState.IsValid)
+                return View();
             else
             {
-                var identity = new ClaimsIdentity(new[]
+                Resultado = _fachada.Consultar(login);
+
+                if (string.IsNullOrWhiteSpace(Resultado.MensagemSucesso.ToString()))
                 {
+                    ViewData["Mensagem"] = Resultado.MensagemSucesso;
+                    return RedirectToAction(nameof(Logon), nameof(LoginController));
+                }
+                else
+                {
+                    var identity = new ClaimsIdentity(new[]
+                    {
                     new Claim(ClaimTypes.Name, login.IdLogin.ToString()),
+                    //new Claim(ClaimTypes.Role, "ADMIN"),
                 }, CookieAuthenticationDefaults.AuthenticationScheme);
 
-                var principal = new ClaimsPrincipal(identity);
+                    var principal = new ClaimsPrincipal(identity);
 
-                await HttpContext.SignInAsync(
-                    CookieAuthenticationDefaults.AuthenticationScheme, principal);
-            
-                return View();
+                    await HttpContext.SignInAsync(
+                        CookieAuthenticationDefaults.AuthenticationScheme, principal);
+
+                    return View();
+                }
             }
         }
 
-        /*  localhost/Login/Logout
-         *  remover usuário logado
-         */
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> Loguot()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
@@ -70,14 +70,11 @@ namespace SKL.Controllers
             return RedirectToAction(nameof(HomeController.Index), nameof(HomeController));
         }
 
-        /* 
-         *  metodo para validação de usuario em base de dados
-         */
         [HttpPost]
         private Login ValidarLogon(Login login)
         {
-            var log = new Login();
-            return login;
+            Resultado = _fachada.Consultar(login);
+            return (Login)Resultado.ListaResultados.Single();
         }
 
         public IActionResult ErroUsuarioNaoLogado() => View();

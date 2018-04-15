@@ -26,28 +26,29 @@ namespace SKL
             {
                 options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
                 options.Filters.Add(new RequireHttpsAttribute());
-            })
-                .AddSessionStateTempDataProvider();
 
-            services.AddSession();
+            });
+            //.AddSessionStateTempDataProvider();
 
-            // auterar conexões do banco de dados dos usuarios do sistema
-            services.AddDbContext<SkldbMainContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("ConexaoNoteCintiaDB")));
-            
+            //services.AddSession();
+
             // adicionar modulo de autenticação via cookeis
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
             {
                 // adicionar telas de validação de login e role
-                options.AccessDeniedPath = "";
+                options.AccessDeniedPath = "/Shared/ErroAcessoNegado";
                 options.LoginPath = "/Shared/ErroUsuarioNaoLogado";
             });
 
             // adicionar roles politica de autenticação de usuario
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("Admin", p => p.RequireAuthenticatedUser().RequireRole("Admin"));
+                options.AddPolicy("ADMIN", p => p.RequireAuthenticatedUser().RequireRole("ADMIN"));
             });
+
+            // auterar conexões do banco de dados dos usuarios do sistema
+            services.AddDbContext<SkldbMainContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("ConexaoNoteMuralisDB")));
         }
 
 
@@ -79,10 +80,10 @@ namespace SKL
 
             app.UseStaticFiles();
 
-            // define uso de authenticação via cookies
+            // define uso de autenticação via cookies criada anteriormente
             app.UseAuthentication();
 
-            app.UseSession();
+            //app.UseSession();
 
             app.UseMvc(routes =>
             {

@@ -6,14 +6,13 @@ namespace SKL.Controllers
 {
     public class HomeController : Controller
     {
+        public HomeController(SkldbMainContext context)
+        { }
+
+        [HttpGet]
         public IActionResult Index()
         {
             return View();
-        }
-
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
 }

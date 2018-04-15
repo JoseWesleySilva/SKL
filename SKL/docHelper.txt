@@ -1,0 +1,7 @@
+﻿Install-Package Microsoft.EntityFrameworkCore.SqlServer
+
+Install-Package Microsoft.EntityFrameworkCore.Tools
+
+Install-Package Microsoft.VisualStudio.Web.CodeGeneration.Design
+
+Scaffold-DbContext "Server=(localdb)\mssqllocaldb;Database=skldb_main;Trusted_Connection=True;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models
