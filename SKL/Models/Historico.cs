@@ -3,11 +3,12 @@ using System.Collections.Generic;
 
 namespace SKL.Models
 {
-    public partial class Historico
+    public partial class Historico : Entidade
     {
-        public DateTime? Datas { get; set; }
-        public float? Notas { get; set; }
-        public int IdCursos { get; set; }
-        public int IdEmpregados { get; set; }
+        public int IdHistorico { get; set; }
+        public DateTime? Data { get; set; }
+        public float? Nota { get; set; }
+        public int IdCurso { get; set; }
+        public int IdEmpregado { get; set; }
     }
 }

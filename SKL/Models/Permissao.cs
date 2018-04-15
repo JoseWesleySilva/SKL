@@ -3,14 +3,14 @@ using System.Collections.Generic;
 
 namespace SKL.Models
 {
-    public partial class Permissoes
+    public partial class Permissao : Entidade
     {
-        public Permissoes()
+        public Permissao()
         {
             Login = new HashSet<Login>();
         }
 
-        public int IdPermissoes { get; set; }
+        public int IdPermissao { get; set; }
         public byte[] Admin { get; set; }
         public byte[] Gerente { get; set; }
         public byte[] Usuario { get; set; }

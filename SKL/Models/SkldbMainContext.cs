@@ -1,42 +1,45 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace SKL.Models
 {
     public partial class SkldbMainContext : DbContext
     {
-        public virtual DbSet<Cargos> Cargos { get; set; }
-        public virtual DbSet<Cursos> Cursos { get; set; }
-        public virtual DbSet<CursosCargos> CursosCargos { get; set; }
-        public virtual DbSet<CursosDepartamentos> CursosDepartamentos { get; set; }
-        public virtual DbSet<Departamentos> Departamentos { get; set; }
-        public virtual DbSet<Empregados> Empregados { get; set; }
+        public virtual DbSet<Cargo> Cargo { get; set; }
+        public virtual DbSet<Curso> Curso { get; set; }
+        public virtual DbSet<CursosPorCargo> CursosPorCargo { get; set; }
+        public virtual DbSet<CursosPorDepartamento> CursosPorDepartamento { get; set; }
+        public virtual DbSet<Departamento> Departamento { get; set; }
+        public virtual DbSet<Empregado> Empregado { get; set; }
         public virtual DbSet<Historico> Historico { get; set; }
         public virtual DbSet<Login> Login { get; set; }
-        public virtual DbSet<Permissoes> Permissoes { get; set; }
-        public virtual DbSet<Pessoas> Pessoas { get; set; }
-        public virtual DbSet<Questoes> Questoes { get; set; }
+        public virtual DbSet<Permissao> Permissao { get; set; }
+        public virtual DbSet<Pessoa> Pessoa { get; set; }
+        public virtual DbSet<Questao> Questao { get; set; }
 
-        public SkldbMainContext(DbContextOptions<SkldbMainContext> options) 
-            : base(options) { }
+//        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+//        {
+//            if (!optionsBuilder.IsConfigured)
+//            {
+//#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
+//                optionsBuilder.UseSqlServer(@"Server=MURALIS-09\SQLEXPRESS;Database=skldb_main;Trusted_Connection=True;");
+//            }
+//        }
 
-        //        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        //        {
-        //            if (!optionsBuilder.IsConfigured)
-        //            {
-        //#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-        //                optionsBuilder.UseSqlServer(@"Server=CINTIANEVES\SQLEXPRESS;Database=skldb_main;Trusted_Connection=True;");
-        //            }
-        //        }
+        public SkldbMainContext(DbContextOptions<SkldbMainContext> options)
+            : base(options)
+        { }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Cargos>(entity =>
+            modelBuilder.Entity<Cargo>(entity =>
             {
-                entity.HasKey(e => e.IdCargos);
+                entity.HasKey(e => e.IdCargo);
 
-                entity.ToTable("CARGOS");
+                entity.ToTable("CARGO");
 
-                entity.Property(e => e.IdCargos).HasColumnName("ID_CARGOS");
+                entity.Property(e => e.IdCargo).HasColumnName("ID_CARGO");
 
                 entity.Property(e => e.Frequencia)
                     .HasColumnName("FREQUENCIA")
@@ -47,13 +50,13 @@ namespace SKL.Models
                     .HasColumnType("datetime");
             });
 
-            modelBuilder.Entity<Cursos>(entity =>
+            modelBuilder.Entity<Curso>(entity =>
             {
-                entity.HasKey(e => e.IdCursos);
+                entity.HasKey(e => e.IdCurso);
 
-                entity.ToTable("CURSOS");
+                entity.ToTable("CURSO");
 
-                entity.Property(e => e.IdCursos).HasColumnName("ID_CURSOS");
+                entity.Property(e => e.IdCurso).HasColumnName("ID_CURSO");
 
                 entity.Property(e => e.LinkConteudo)
                     .HasColumnName("LINK_CONTEUDO")
@@ -80,73 +83,69 @@ namespace SKL.Models
                     .IsUnicode(false);
             });
 
-            modelBuilder.Entity<CursosCargos>(entity =>
+            modelBuilder.Entity<CursosPorCargo>(entity =>
             {
-                entity.HasKey(e => new { e.IdCursos, e.IdCargos });
+                entity.HasKey(e => new { e.IdCurso, e.IdCargo });
 
-                entity.ToTable("CURSOS_CARGOS");
+                entity.ToTable("CURSOS_POR_CARGO");
 
-                entity.Property(e => e.IdCursos).HasColumnName("ID_CURSOS");
+                entity.Property(e => e.IdCurso).HasColumnName("ID_CURSO");
 
-                entity.Property(e => e.IdCargos).HasColumnName("ID_CARGOS");
+                entity.Property(e => e.IdCargo).HasColumnName("ID_CARGO");
             });
 
-            modelBuilder.Entity<CursosDepartamentos>(entity =>
+            modelBuilder.Entity<CursosPorDepartamento>(entity =>
             {
-                entity.HasKey(e => e.Frequencia);
+                entity.HasKey(e => new { e.IdCurso, e.IdDepartamento });
 
-                entity.ToTable("CURSOS_DEPARTAMENTOS");
+                entity.ToTable("CURSOS_POR_DEPARTAMENTO");
 
-                entity.Property(e => e.Frequencia)
-                    .HasColumnName("FREQUENCIA")
-                    .HasColumnType("datetime");
+                entity.Property(e => e.IdCurso).HasColumnName("ID_CURSO");
 
-                entity.Property(e => e.IdCursos).HasColumnName("ID_CURSOS");
+                entity.Property(e => e.IdDepartamento).HasColumnName("ID_DEPARTAMENTO");
 
-                entity.Property(e => e.IdDepartamentos).HasColumnName("ID_DEPARTAMENTOS");
-
-                entity.HasOne(d => d.IdCursosNavigation)
-                    .WithMany(p => p.CursosDepartamentos)
-                    .HasForeignKey(d => d.IdCursos)
+                entity.HasOne(d => d.IdCursoNavigation)
+                    .WithMany(p => p.CursosPorDepartamento)
+                    .HasForeignKey(d => d.IdCurso)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_TB_COURSES_COURSE_BY_DEPARTMENT");
+                    .HasConstraintName("FK_CURSOS_POR_DEPARTAMENTO_ID_CURSO");
 
-                entity.HasOne(d => d.IdDepartamentosNavigation)
-                    .WithMany(p => p.CursosDepartamentos)
-                    .HasForeignKey(d => d.IdDepartamentos)
+                entity.HasOne(d => d.IdDepartamentoNavigation)
+                    .WithMany(p => p.CursosPorDepartamento)
+                    .HasForeignKey(d => d.IdDepartamento)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_TB_DEPARTMENTS_COURSE_BY_DEPARTMENT");
+                    .HasConstraintName("FK_CURSOS_POR_DEPARTAMENTO_ID_DEPARTAMENTO");
             });
 
-            modelBuilder.Entity<Departamentos>(entity =>
+            modelBuilder.Entity<Departamento>(entity =>
             {
-                entity.HasKey(e => e.IdDepartamentos);
+                entity.HasKey(e => e.IdDepartamento);
 
-                entity.ToTable("DEPARTAMENTOS");
+                entity.ToTable("DEPARTAMENTO");
 
-                entity.Property(e => e.IdDepartamentos).HasColumnName("ID_DEPARTAMENTOS");
+                entity.Property(e => e.IdDepartamento).HasColumnName("ID_DEPARTAMENTO");
 
-                entity.Property(e => e.IdEmpregados).HasColumnName("ID_EMPREGADOS");
+                entity.Property(e => e.IdEmpregado).HasColumnName("ID_EMPREGADO");
 
                 entity.Property(e => e.Nome)
                     .HasColumnName("NOME")
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.HasOne(d => d.IdEmpregadosNavigation)
-                    .WithMany(p => p.Departamentos)
-                    .HasForeignKey(d => d.IdEmpregados)
+                entity.HasOne(d => d.IdEmpregadoNavigation)
+                    .WithMany(p => p.Departamento)
+                    .HasForeignKey(d => d.IdEmpregado)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_TB_EMPLOYEES");
+                    .HasConstraintName("FK_DEPARTAMENTO_EMPREGADO");
             });
 
-            modelBuilder.Entity<Empregados>(entity =>
+            modelBuilder.Entity<Empregado>(entity =>
             {
-                entity.HasKey(e => e.IdEmpregados);
+                entity.HasKey(e => e.IdEmpregado);
 
-                entity.ToTable("EMPREGADOS");
+                entity.ToTable("EMPREGADO");
 
-                entity.Property(e => e.IdEmpregados).HasColumnName("ID_EMPREGADOS");
+                entity.Property(e => e.IdEmpregado).HasColumnName("ID_EMPREGADO");
 
                 entity.Property(e => e.Administrador).HasColumnName("ADMINISTRADOR");
 
@@ -164,9 +163,9 @@ namespace SKL.Models
                     .HasMaxLength(200)
                     .IsUnicode(false);
 
-                entity.Property(e => e.IdCarogs).HasColumnName("ID_CAROGS");
+                entity.Property(e => e.IdCargo).HasColumnName("ID_CARGO");
 
-                entity.Property(e => e.IdDepartamentos).HasColumnName("ID_DEPARTAMENTOS");
+                entity.Property(e => e.IdDepartamento).HasColumnName("ID_DEPARTAMENTO");
 
                 entity.Property(e => e.Nome)
                     .HasColumnName("NOME")
@@ -177,34 +176,36 @@ namespace SKL.Models
                     .HasColumnName("SEXO")
                     .HasColumnType("char(1)");
 
-                entity.HasOne(d => d.IdCarogsNavigation)
-                    .WithMany(p => p.Empregados)
-                    .HasForeignKey(d => d.IdCarogs)
+                entity.HasOne(d => d.IdCargoNavigation)
+                    .WithMany(p => p.Empregado)
+                    .HasForeignKey(d => d.IdCargo)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_CHARGES");
+                    .HasConstraintName("FK_EMPREGADO_CARGO");
 
-                entity.HasOne(d => d.IdDepartamentosNavigation)
-                    .WithMany(p => p.Empregados)
-                    .HasForeignKey(d => d.IdDepartamentos)
+                entity.HasOne(d => d.IdDepartamentoNavigation)
+                    .WithMany(p => p.Empregado)
+                    .HasForeignKey(d => d.IdDepartamento)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_TB_DEPARTMENTS");
+                    .HasConstraintName("FK_EMPREGADO_DEPARTAMENTO");
             });
 
             modelBuilder.Entity<Historico>(entity =>
             {
-                entity.HasKey(e => new { e.IdCursos, e.IdEmpregados });
+                entity.HasKey(e => e.IdHistorico);
 
                 entity.ToTable("HISTORICO");
 
-                entity.Property(e => e.IdCursos).HasColumnName("ID_CURSOS");
+                entity.Property(e => e.IdHistorico).HasColumnName("ID_HISTORICO");
 
-                entity.Property(e => e.IdEmpregados).HasColumnName("ID_EMPREGADOS");
-
-                entity.Property(e => e.Datas)
-                    .HasColumnName("DATAS")
+                entity.Property(e => e.Data)
+                    .HasColumnName("DATA")
                     .HasColumnType("datetime");
 
-                entity.Property(e => e.Notas).HasColumnName("NOTAS");
+                entity.Property(e => e.IdCurso).HasColumnName("ID_CURSO");
+
+                entity.Property(e => e.IdEmpregado).HasColumnName("ID_EMPREGADO");
+
+                entity.Property(e => e.Nota).HasColumnName("NOTA");
             });
 
             modelBuilder.Entity<Login>(entity =>
@@ -233,16 +234,16 @@ namespace SKL.Models
                     .WithMany(p => p.Login)
                     .HasForeignKey(d => d.IdPermissao)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_PERMISSION_LOGIN");
+                    .HasConstraintName("FK_LOGIN_PERMISSAO");
             });
 
-            modelBuilder.Entity<Permissoes>(entity =>
+            modelBuilder.Entity<Permissao>(entity =>
             {
-                entity.HasKey(e => e.IdPermissoes);
+                entity.HasKey(e => e.IdPermissao);
 
-                entity.ToTable("PERMISSOES");
+                entity.ToTable("PERMISSAO");
 
-                entity.Property(e => e.IdPermissoes).HasColumnName("ID_PERMISSOES");
+                entity.Property(e => e.IdPermissao).HasColumnName("ID_PERMISSAO");
 
                 entity.Property(e => e.Admin)
                     .HasColumnName("ADMIN")
@@ -257,13 +258,13 @@ namespace SKL.Models
                     .HasColumnType("binary(1)");
             });
 
-            modelBuilder.Entity<Pessoas>(entity =>
+            modelBuilder.Entity<Pessoa>(entity =>
             {
-                entity.HasKey(e => e.IdPessoas);
+                entity.HasKey(e => e.IdPessoa);
 
-                entity.ToTable("PESSOAS");
+                entity.ToTable("PESSOA");
 
-                entity.Property(e => e.IdPessoas).HasColumnName("ID_PESSOAS");
+                entity.Property(e => e.IdPessoa).HasColumnName("ID_PESSOA");
 
                 entity.Property(e => e.IdLogin).HasColumnName("ID_LOGIN");
 
@@ -274,19 +275,19 @@ namespace SKL.Models
                     .IsUnicode(false);
 
                 entity.HasOne(d => d.IdLoginNavigation)
-                    .WithMany(p => p.Pessoas)
+                    .WithMany(p => p.Pessoa)
                     .HasForeignKey(d => d.IdLogin)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_LOGIN_PERSON");
+                    .HasConstraintName("FK_PESSOA_LOGIN");
             });
 
-            modelBuilder.Entity<Questoes>(entity =>
+            modelBuilder.Entity<Questao>(entity =>
             {
-                entity.HasKey(e => e.IdQuestions);
+                entity.HasKey(e => e.IdQuestao);
 
-                entity.ToTable("QUESTOES");
+                entity.ToTable("QUESTAO");
 
-                entity.Property(e => e.IdQuestions).HasColumnName("ID_QUESTIONS");
+                entity.Property(e => e.IdQuestao).HasColumnName("ID_QUESTAO");
 
                 entity.Property(e => e.A)
                     .HasMaxLength(200)
@@ -314,13 +315,13 @@ namespace SKL.Models
                     .HasMaxLength(200)
                     .IsUnicode(false);
 
-                entity.Property(e => e.IdCourses).HasColumnName("ID_COURSES");
+                entity.Property(e => e.IdCurso).HasColumnName("ID_CURSO");
 
-                entity.HasOne(d => d.IdCoursesNavigation)
-                    .WithMany(p => p.Questoes)
-                    .HasForeignKey(d => d.IdCourses)
+                entity.HasOne(d => d.IdCursoNavigation)
+                    .WithMany(p => p.Questao)
+                    .HasForeignKey(d => d.IdCurso)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_COURSES");
+                    .HasConstraintName("FK_QUESTAO_CURSO");
             });
         }
     }

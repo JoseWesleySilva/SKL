@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
@@ -9,22 +8,23 @@ namespace SKL.Models
     {
         public Login()
         {
-            Pessoas = new HashSet<Pessoas>();
+            Pessoa = new HashSet<Pessoa>();
         }
 
         public int IdLogin { get; set; }
 
-        [Required]
+        [StringLength(50)]
         [DisplayName("Nome")]
+        [RegularExpression(@"^[A-Z]+[a-zA-Z""'\s-]*$")]
+        [Required(ErrorMessage = "O campo Nome deve ser preenchido.")]
         public string NomeUsuario { get; set; }
 
-        [Required]
+        [StringLength(50, MinimumLength = 8)]
+        [Required(ErrorMessage = "O campo Senha deve ser preenchido.")]
         public string Senha { get; set; }
-
         public int IdPermissao { get; set; }
 
-        public Permissoes IdPermissaoNavigation { get; set; }
-
-        public ICollection<Pessoas> Pessoas { get; set; }
+        public Permissao IdPermissaoNavigation { get; set; }
+        public ICollection<Pessoa> Pessoa { get; set; }
     }
 }

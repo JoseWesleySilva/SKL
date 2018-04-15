@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace SKL.Models
 {
-    public partial class Pessoas
+    public partial class Pessoa : Entidade
     {
-        public int IdPessoas { get; set; }
+        public int IdPessoa { get; set; }
         public string Nome { get; set; }
         public int IdLogin { get; set; }
 
