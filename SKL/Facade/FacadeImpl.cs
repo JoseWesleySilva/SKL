@@ -5,13 +5,13 @@ using SKL.Service;
 using SKL.Strategy;
 using SKL.Strategy.StrategyImpl;
 
-namespace SKL.Fachada
+namespace SKL.Facade
 {
     /*
      Fachada para realizar a abstração, criação e 
      execução de serviços e validações do sistema
     */
-    public class Facade : IFacade
+    public class FacadeImpl : IFacade
     {
         private readonly SkldbMainContext _context;
 
@@ -20,19 +20,14 @@ namespace SKL.Fachada
         private static readonly string _DELETAR = "DELETAR";
         private static readonly string _SALVAR = "SALVAR";
 
+        Resultado Resultado { get; set; }
         private IStrategy StrategySelecionada { get; set; }
         private IService ServiceSelecionada { get; set; }
 
         private Dictionary<string, IService> listaService;
         private Dictionary<string, IStrategy> listaStrategy;
-        
-        public Resultado Resultado
-        {
-            get { return Resultado; }
-            set { Resultado = value; }
-        }
-
-        public Facade(SkldbMainContext context)
+     
+        public FacadeImpl(SkldbMainContext context)
         {
             _context = context;
             listaService = MontaServiceDictionary(_context);
@@ -43,7 +38,7 @@ namespace SKL.Fachada
         {
             return new Dictionary<string, IService>
             {
-                { nameof(LoginService).ToString(), new LoginService(context) },
+                { typeof(Login).Name, new LoginService(context) },
             };
         }
 
@@ -54,12 +49,11 @@ namespace SKL.Fachada
                 {  typeof(Login).Name, new LoginStrategy() },
             };
         }
-        
+
         private Resultado ExecutarValidacoes(Entidade entidade, string operacao)
         {
             StrategySelecionada = listaStrategy.GetValueOrDefault(entidade.GetType().Name, null);
-            if(StrategySelecionada != null)
-                Resultado = StrategySelecionada.ValidaEntidade(entidade);
+            Resultado = StrategySelecionada.ValidaEntidade(entidade);
 
             return Resultado;
         }
@@ -68,9 +62,11 @@ namespace SKL.Fachada
         public Resultado Alterar(Entidade entidade)
         {
             Resultado = ExecutarValidacoes(entidade, _ALTERAR);
-            ServiceSelecionada = listaService.GetValueOrDefault(nameof(entidade).ToString(), null);
-            if (ServiceSelecionada != null)
-                Resultado = ServiceSelecionada.Alterar(entidade);
+            if (Resultado.MensagemErro.Length > 0)
+                return Resultado;
+
+            ServiceSelecionada = listaService.GetValueOrDefault(entidade.GetType().Name, null);
+            Resultado = ServiceSelecionada.Alterar(entidade);
 
             return Resultado;
         }
@@ -78,9 +74,11 @@ namespace SKL.Fachada
         public Resultado Consultar(Entidade entidade)
         {
             Resultado = ExecutarValidacoes(entidade, _CONSULTAR);
-            ServiceSelecionada = listaService.GetValueOrDefault(nameof(entidade).ToString(), null);
-            if (ServiceSelecionada != null)
-                Resultado = ServiceSelecionada.Consultar(entidade);
+            if (Resultado.MensagemErro.Length > 0)
+                return Resultado;
+
+            ServiceSelecionada = listaService.GetValueOrDefault(entidade.GetType().Name, null);
+            Resultado = ServiceSelecionada.Consultar(entidade);
 
             return Resultado;
         }
@@ -88,9 +86,11 @@ namespace SKL.Fachada
         public Resultado Deletar(Entidade entidade)
         {
             Resultado = ExecutarValidacoes(entidade, _DELETAR);
-            ServiceSelecionada = listaService.GetValueOrDefault(nameof(entidade).ToString(), null);
-            if (ServiceSelecionada != null)
-                Resultado = ServiceSelecionada.Deletar(entidade);
+            if (Resultado.MensagemErro.Length > 0)
+                return Resultado;
+
+            ServiceSelecionada = listaService.GetValueOrDefault(entidade.GetType().Name, null);
+            Resultado = ServiceSelecionada.Deletar(entidade);
 
             return Resultado;
         }
@@ -98,9 +98,11 @@ namespace SKL.Fachada
         public Resultado Salvar(Entidade entidade)
         {
             Resultado = ExecutarValidacoes(entidade, _SALVAR);
-            ServiceSelecionada = listaService.GetValueOrDefault(nameof(entidade).ToString(), null);
-            if (ServiceSelecionada != null)
-                Resultado = ServiceSelecionada.Deletar(entidade);
+            if (Resultado.MensagemErro.Length > 0)
+                return Resultado;
+
+            ServiceSelecionada = listaService.GetValueOrDefault(entidade.GetType().Name, null);
+            Resultado = ServiceSelecionada.Deletar(entidade);
 
             return Resultado;
         }

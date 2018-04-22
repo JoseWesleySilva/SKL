@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace SKL.Models
 {
-    public partial class Questao : Entidade
+    public partial class Questao :Entidade
     {
         public string A { get; set; }
         public string B { get; set; }

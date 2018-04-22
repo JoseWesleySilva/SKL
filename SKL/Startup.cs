@@ -40,10 +40,12 @@ namespace SKL
                 options.LoginPath = "/Shared/ErroUsuarioNaoLogado";
             });
 
-            // adicionar roles politica de autenticação de usuario
+            // adicionar roles de politica de autenticação de usuario
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("ADMIN", p => p.RequireAuthenticatedUser().RequireRole("ADMIN"));
+                options.AddPolicy("ADMINISTRADOR", p => p.RequireAuthenticatedUser().RequireRole("ADMINISTRADOR"));
+                options.AddPolicy("GERENTE", p => p.RequireAuthenticatedUser().RequireRole("GERENTE"));
+                options.AddPolicy("USUARIO", p => p.RequireAuthenticatedUser().RequireRole("USUARIO"));
             });
 
             // auterar conexões do banco de dados dos usuarios do sistema

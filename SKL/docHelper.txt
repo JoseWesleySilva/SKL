@@ -5,3 +5,8 @@ Install-Package Microsoft.EntityFrameworkCore.Tools
 Install-Package Microsoft.VisualStudio.Web.CodeGeneration.Design
 
 Scaffold-DbContext "Server=(localdb)\mssqllocaldb;Database=skldb_main;Trusted_Connection=True;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models
+
+wesley
+Scaffold-DbContext "Server=MURALIS-09\SQLEXPRESS; Database=skldb_main; Trusted_Connection=True;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models
+
+https://docs.microsoft.com/pt-br/aspnet/core/mvc/models/validation

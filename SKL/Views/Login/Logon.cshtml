@@ -13,38 +13,43 @@
 }
 else
 {
-    <div class="row">
-        <div class="form-group has-danger col-md-3">
-            @Html.DisplayNameFor(m => m.NomeUsuario
-       )
-            @Html.TextBoxFor(m => m.NomeUsuario, new { @class = "form-control" })
-            <span asp-validation-for="NomeUsuario" class="text-danger"></span>
+    if (ViewData["Mensagem"] != null)
+    {
+        <div class="alert alert-danger">
+            <strong>@ViewData["Mensagem"].ToString()</strong>
         </div>
-    </div>
-    <div class="row">
-        <div class="form-group has-danger col-md-3">
-            @Html.DisplayNameFor(m => m.Senha)
-            @Html.PasswordFor(m => m.Senha, new { @class = "form-control" })
-            <span asp-validation-for="Senha" class="text-danger"></span>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-3">
-            <div class="form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" name="remember" type="checkbox">
-                    <span>Lembrar senha</span>
-                </label>
+    }
+    <form asp-controller="Login" asp-action="Logon" method="post">
+        <div class="row">
+            <div class="form-group has-danger col-md-3">
+                @Html.DisplayNameFor(m => m.NomeUsuario)
+                @Html.TextBoxFor(m => m.NomeUsuario, new { @class = "form-control" })
+                <span asp-validation-for="NomeUsuario" class="text-danger"></span>
             </div>
         </div>
-    </div>
-    <div class="row" style="padding-top: 1rem">
-        <div class="col-md-3">
-            <form asp-controller="Login" asp-action="Logon">
-                <button type="submit" class="btn btn-success"><i class="fa fa-sign-in"></i> Login</button>
-            </form>
+        <div class="row">
+            <div class="form-group has-danger col-md-3">
+                @Html.DisplayNameFor(m => m.Senha)
+                @Html.PasswordFor(m => m.Senha, new { @class = "form-control" })
+                <span asp-validation-for="Senha" class="text-danger"></span>
+            </div>
         </div>
-    </div>
+        <div class="row">
+            <div class="col-md-3">
+                <div class="form-check">
+                    <label class="form-check-label">
+                        <input class="form-check-input" name="remember" type="checkbox">
+                        <span>Lembrar senha</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="row" style="padding-top: 1rem">
+            <div class="col-md-3">
+                <button class="btn btn-success">Login</button>
+            </div>
+        </div>
+    </form>
     <div class="row" style="padding-top: 1rem">
         <div class="col-sm-3">
             <a asp-controller="" asp-action="">Esqueceu a senha?</a> <!-- criar tela para reenvio de senha -->

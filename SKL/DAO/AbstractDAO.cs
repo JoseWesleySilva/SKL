@@ -10,6 +10,7 @@ namespace SKL.DAO
 
         public AbstractDAO(SkldbMainContext context)
         {
+            Resultado = new Resultado();
             Context = context;
         }
 

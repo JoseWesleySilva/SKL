@@ -18,15 +18,6 @@ namespace SKL.Models
         public virtual DbSet<Pessoa> Pessoa { get; set; }
         public virtual DbSet<Questao> Questao { get; set; }
 
-//        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-//        {
-//            if (!optionsBuilder.IsConfigured)
-//            {
-//#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-//                optionsBuilder.UseSqlServer(@"Server=MURALIS-09\SQLEXPRESS;Database=skldb_main;Trusted_Connection=True;");
-//            }
-//        }
-
         public SkldbMainContext(DbContextOptions<SkldbMainContext> options)
             : base(options)
         { }
@@ -230,8 +221,8 @@ namespace SKL.Models
                     .HasMaxLength(60)
                     .IsUnicode(false);
 
-                entity.HasOne(d => d.IdPermissaoNavigation)
-                    .WithMany(p => p.Login)
+                entity.HasOne(l => l.Permissao)
+                    .WithMany()
                     .HasForeignKey(d => d.IdPermissao)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_LOGIN_PERMISSAO");
@@ -249,6 +240,11 @@ namespace SKL.Models
                     .HasColumnName("ADMIN")
                     .HasColumnType("binary(1)");
 
+                entity.Property(e => e.Descricao)
+                    .HasColumnName("DESCRICAO")
+                    .HasMaxLength(60)
+                    .IsUnicode(false);
+
                 entity.Property(e => e.Gerente)
                     .HasColumnName("GERENTE")
                     .HasColumnType("binary(1)");
@@ -264,6 +260,10 @@ namespace SKL.Models
 
                 entity.ToTable("PESSOA");
 
+                entity.HasIndex(e => e.IdLogin)
+                    .HasName("UQ__PESSOA__23E22D754F3334A0")
+                    .IsUnique();
+
                 entity.Property(e => e.IdPessoa).HasColumnName("ID_PESSOA");
 
                 entity.Property(e => e.IdLogin).HasColumnName("ID_LOGIN");
@@ -275,8 +275,8 @@ namespace SKL.Models
                     .IsUnicode(false);
 
                 entity.HasOne(d => d.IdLoginNavigation)
-                    .WithMany(p => p.Pessoa)
-                    .HasForeignKey(d => d.IdLogin)
+                    .WithOne(p => p.Pessoa)
+                    .HasForeignKey<Pessoa>(d => d.IdLogin)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_PESSOA_LOGIN");
             });

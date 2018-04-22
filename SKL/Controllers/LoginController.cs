@@ -4,12 +4,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
-using SKL.DAO;
 using SKL.Models;
-using SKL.Service;
-using SKL.Fachada;
 using SKL.Util;
 using Microsoft.AspNetCore.Authorization;
+using SKL.Facade;
 
 namespace SKL.Controllers
 {
@@ -20,7 +18,7 @@ namespace SKL.Controllers
 
         public LoginController(SkldbMainContext context)
         {
-            _fachada = new Facade(context);
+            _fachada = new Facade.FacadeImpl(context);
         }
 
         [HttpGet]
@@ -38,43 +36,37 @@ namespace SKL.Controllers
             {
                 Resultado = _fachada.Consultar(login);
 
-                if (string.IsNullOrWhiteSpace(Resultado.MensagemSucesso.ToString()))
+                if (!string.IsNullOrWhiteSpace(Resultado.MensagemErro.ToString()))
                 {
-                    ViewData["Mensagem"] = Resultado.MensagemSucesso;
-                    return RedirectToAction(nameof(Logon), nameof(LoginController));
+                    ViewData["Mensagem"] = Resultado.MensagemErro;
+                    return View();
                 }
                 else
-                {
+                { // cria cookie de validação de dados
+                    Login l = (Login)Resultado.ListaResultados.First();
                     var identity = new ClaimsIdentity(new[]
                     {
-                    new Claim(ClaimTypes.Name, login.IdLogin.ToString()),
-                    //new Claim(ClaimTypes.Role, "ADMIN"),
-                }, CookieAuthenticationDefaults.AuthenticationScheme);
+                        new Claim(ClaimTypes.Name, l.IdLogin.ToString()),
+                        new Claim(ClaimTypes.Role, l.Permissao.Descricao),
+                    }, CookieAuthenticationDefaults.AuthenticationScheme);
 
                     var principal = new ClaimsPrincipal(identity);
 
                     await HttpContext.SignInAsync(
                         CookieAuthenticationDefaults.AuthenticationScheme, principal);
 
-                    return View();
+                    return RedirectToAction(nameof(CursoController.Curso), nameof(Curso));
                 }
             }
         }
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> Loguot()
+        public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
-            return RedirectToAction(nameof(HomeController.Index), nameof(HomeController));
-        }
-
-        [HttpPost]
-        private Login ValidarLogon(Login login)
-        {
-            Resultado = _fachada.Consultar(login);
-            return (Login)Resultado.ListaResultados.Single();
+            return RedirectToAction(nameof(HomeController.Index), "Home");
         }
 
         public IActionResult ErroUsuarioNaoLogado() => View();

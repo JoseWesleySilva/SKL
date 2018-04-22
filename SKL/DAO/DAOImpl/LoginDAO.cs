@@ -2,6 +2,7 @@
 using System.Linq;
 using SKL.Models;
 using SKL.Util;
+using Microsoft.EntityFrameworkCore;
 
 namespace SKL.DAO
 {
@@ -33,8 +34,11 @@ namespace SKL.DAO
             try
             {
                 login = (Login)entidade;
-                var usuarioLogado = (from l in Context.Login select l)
-                    .Single(l => l.IdLogin == login.IdLogin);
+
+                var usuarioLogado = Context.Login
+                    .Where(l => l.NomeUsuario == login.NomeUsuario && l.Senha == login.Senha)
+                    .Include(l => l.Permissao)
+                    .FirstOrDefault();
 
                 Resultado.ListaResultados.Add(usuarioLogado);
             }
