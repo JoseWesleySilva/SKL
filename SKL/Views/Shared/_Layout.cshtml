@@ -1,5 +1,16 @@
 ﻿<!DOCTYPE html>
 <html>
+<style>
+    footer {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        color: #fff;
+        background: #333;
+        padding: 5px 0;
+        text-align: center;
+    }
+</style>
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -8,6 +19,8 @@
     <environment include="Development">
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
         <link rel="stylesheet" href="~/css/site.css" />
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     </environment>
     <environment exclude="Development">
         <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/css/bootstrap.min.css"
@@ -29,11 +42,11 @@
                 <a asp-controller="Home" asp-action="Index" class="navbar-brand">SKL</a>
             </div>
             <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                    <li><a asp-controller="Home" asp-action="Index">Home</a></li>
+                <ul class="nav navbar-nav navbar-right">
+                    <!-- <li><a asp-controller="Home" asp-action="Index">Home</a></li>-->
                     @if (!User.Identity.IsAuthenticated)
                     {
-                        <li><a asp-controller="Login" asp-action="Logon">Logon</a></li>
+                        <li>  <a asp-controller="Login" class="glyphicon glyphicon-user" asp-action="Logon"> LOGON</a></li>
                     }
                     else
                     {
@@ -65,13 +78,11 @@
     <div class="container container-fluid body-content">
         @RenderBody()
         <hr />
-        <footer>
-            <p>&copy; 2018 - SKL</p>
-        </footer>
+        
     </div>
 
     <environment include="Development">
-        <script src="~/lib/jquery/dist/jquery.js"></script>
+      <!--  <script src="~/lib/jquery/dist/jquery.js"></script>-->
         <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
         <script src="~/js/site.js" asp-append-version="true"></script>
     </environment>
@@ -90,7 +101,9 @@
         </script>
         <script src="~/js/site.min.js" asp-append-version="true"></script>
     </environment>
-
+    <footer>
+        <p>&copy; 2018 - SKL</p>
+    </footer>
     @RenderSection("Scripts", required: false)
 </body>
 </html>
